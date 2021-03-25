@@ -1,0 +1,6 @@
+# @package _group_
+_target_: dataset.imagenet.ImageNetDataModule
+data_dir: /data/imagenet
+batch_size: 256
+num_workers: 6
+pin_memory: True

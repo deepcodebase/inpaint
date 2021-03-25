@@ -1,0 +1,26 @@
+defaults:
+  - model: resnet
+  - loss: cross_entropy
+  - optim: sgd
+  - scheduler: step
+  - dataset: imagenet
+  - pipeline: classifier
+
+pl_trainer:
+  accelerator: ddp
+  precision: 16
+  amp_backend: native
+  amp_level: O2
+  profiler: simple
+  weights_summary: top
+  deterministic: true
+  max_epochs: 90
+  gpus: -1
+  default_root_dir: ./
+
+run_test: true
+seed: 2021
+
+hydra:
+  run:
+    dir: outputs/${dataset._target_}/${model._target_}/${now:%Y-%m-%d_%H-%M-%S}

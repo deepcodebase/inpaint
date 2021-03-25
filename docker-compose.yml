@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+    playground:
+        container_name: playground
+        build:
+            context: docker/
+            dockerfile: Dockerfile.local
+            args:
+                - USER_ID=${UID}
+                - GROUP_ID=${GID}
+                - USER_NAME=${USER_NAME}
+        image: pytorch_local
+        environment:
+            - TZ=Asia/Shanghai
+        ipc: host
+        hostname: docker
+        working_dir: /code
+        command: ['sleep', 'infinity']
+        volumes:
+            - .:/code
+            - /data1/data:/data
