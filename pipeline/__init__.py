@@ -1,1 +1,1 @@
-from .classifier import LitClassifier
+from .inpainter import LitInpainter

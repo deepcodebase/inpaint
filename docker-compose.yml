@@ -12,6 +12,7 @@ services:
         image: pytorch_local
         environment:
             - TZ=Asia/Shanghai
+            - TORCH_HOME=/data/torch_model
         ipc: host
         hostname: docker
         working_dir: /code
@@ -19,3 +20,4 @@ services:
         volumes:
             - .:/code
             - /data1/data:/data
+            - /data2/data/train_log/outputs:/outputs

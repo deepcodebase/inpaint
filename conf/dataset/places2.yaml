@@ -1,0 +1,11 @@
+# @package _group_
+_target_: dataset.inpaint.InpaintDataModule
+data:
+  name: places2
+  train_dir: /data/places2/data_large
+  val_dir: /data/places2/val_large
+  test_dir: /data/places2/test_large
+mask:
+  train_dir: /data/mask
+  val_dir: /data/mask
+  test_dir: /data/mask

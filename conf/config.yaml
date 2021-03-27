@@ -1,10 +1,10 @@
 defaults:
-  - model: resnet
-  - loss: cross_entropy
-  - optim: sgd
+  - model: dfnet
+  - loss: inpaint
+  - optim: adam
   - scheduler: step
-  - dataset: imagenet
-  - pipeline: classifier
+  - dataset: places2
+  - pipeline: inpainter
 
 pl_trainer:
   accelerator: ddp
@@ -14,13 +14,23 @@ pl_trainer:
   profiler: simple
   weights_summary: top
   deterministic: true
-  max_epochs: 90
+  max_epochs: 20
   gpus: -1
   default_root_dir: ./
 
-run_test: true
+dataset:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: True
+
+val_save:
+  n_image_per_batch: 8
+  n_save: 10
+
+run_test: false
 seed: 2021
+find_unused_parameters: true
 
 hydra:
   run:
-    dir: outputs/${dataset._target_}/${model._target_}/${now:%Y-%m-%d_%H-%M-%S}
+    dir: /outputs/${dataset.data.name}/${model._target_}/${now:%Y-%m-%d_%H-%M-%S}

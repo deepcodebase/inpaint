@@ -1,0 +1,9 @@
+# @package _group_
+_target_: loss.InpaintLoss
+c_img: 3
+w_l1: 6.
+w_percep: 0.1
+w_style: 240.
+w_tv: 0.1
+structure_layers: [0, 1, 2, 3, 4, 5]
+texture_layers: [0, 1, 2]

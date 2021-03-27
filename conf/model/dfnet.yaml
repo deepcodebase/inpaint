@@ -1,0 +1,12 @@
+# @package _group_
+_target_: model.dfnet.DFNet
+c_img: 3
+c_mask: 1
+c_alpha: 3
+mode: 'nearest'
+norm: 'batch'
+act_en: 'relu'
+act_de: 'leaky_relu'
+en_ksize: [7, 5, 5, 3, 3, 3, 3, 3]
+de_ksize: [3, 3, 3, 3, 3, 3, 3, 3]
+blend_layers: [0, 1, 2, 3, 4, 5]

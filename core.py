@@ -39,6 +39,7 @@ def add_env_parser(subparsers):
         'action', nargs='?', choices=['prepare', 'enter', 'stop'],
         default='enter')
     parser.add_argument('-b', '--build', action='store_true', default=False)
+    parser.add_argument('--root', action='store_true', default=False)
 
 
 def env(args):
@@ -48,7 +49,10 @@ def env(args):
         if args.build:
             command += ' --build'
     elif args.action == 'enter':
-        command = 'docker-compose exec playground zsh'
+        if args.root:
+            command = 'docker-compose exec -u root playground zsh'
+        else:
+            command = 'docker-compose exec playground zsh'
     elif args.action == 'stop':
         command = 'docker-compose stop'
     else:
