@@ -2,13 +2,26 @@
 
 This repo implements a simple PyTorch codebase for training inpainting models with powerful tools including Docker, PyTorchLightning, and Hydra.
 
-Currently, only DFNet is supported. We consider to implement more methods as well as some additional useful utilities for image inpainting.
+Currently, only [DFNet](https://github.com/hughplay/DFNet) is supported. More methods as well as some additional useful utilities for image inpainting will be implemented.
 
 ## Requirements
 
 - nvidia-docker
 - docker-compose
 
+## Functionalities
+
+- PytorchLightning
+    - logging (tensorboard, csv)
+    - checkpoint
+    - DistributedDataParallel
+    - mixed-precision
+- Hydra
+    - flexible configuration system
+    - logging (stream to file, folder structure)
+    - multi-run
+- Others
+    - save sample results
 
 ## Setup
 
@@ -16,7 +29,7 @@ Currently, only DFNet is supported. We consider to implement more methods as wel
 
 We use docker to run all experiemnts. Before running any codes, you should check `docker-compose.yml` first. The defualt setting is shown as below:
 
-``` 
+``` yaml
 version: "3.9"
 services:
     playground:
