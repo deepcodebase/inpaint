@@ -9,7 +9,7 @@ Currently, only [DFNet](https://github.com/hughplay/DFNet) is supported. More me
 - nvidia-docker
 - docker-compose
 
-## Functionalities
+## Features
 
 - PytorchLightning
     - logging (tensorboard, csv)
