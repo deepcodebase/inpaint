@@ -33,8 +33,7 @@ class LitInpainter(LightningModule):
         loss, loss_detail = self.loss(output, img, mask)
 
         self.log(
-            'train/loss', loss,
-            on_step=True, on_epoch=True, prog_bar=True)
+            'train_loss', loss, on_step=True, on_epoch=True)
         self.log(
             'train/mse', loss_detail['reconstruction_loss'],
             on_step=True, on_epoch=True, prog_bar=True)
@@ -56,7 +55,7 @@ class LitInpainter(LightningModule):
         loss, loss_detail = self.loss(fulls, img, mask)
 
         self.log(
-            'val/loss', loss, on_epoch=True, prog_bar=True)
+            'val_loss', loss, on_epoch=True, prog_bar=True)
         self.log(
             'val/mse', loss_detail['reconstruction_loss'],
             on_epoch=True, prog_bar=True)
@@ -71,7 +70,7 @@ class LitInpainter(LightningModule):
             # To save n_save * n_image_per_batch samples into files every epoch.
             batch_interval = max(
                 1, len(self.trainer.datamodule.val_dataloader()) // (
-                    self.trainer.world_size * self.cfg.val_save.n_save))
+                    self.trainer.world_size * (self.cfg.val_save.n_save - 1)))
             if batch_idx % batch_interval == 0:
                 save_dir = Path(f'result/epoch_{self.current_epoch}/')
                 save_dir.mkdir(exist_ok=True, parents=True)
@@ -83,6 +82,16 @@ class LitInpainter(LightningModule):
                         alpha[:n], fill[:n], full[:n]), dim=0),
                     save_dir / f'{batch_idx:09d}.jpg', nrow=n)
         return loss
+
+    def _log_metrics(self):
+        if self.trainer.is_global_zero:
+            str_metrics = ''
+            for key, val in self.trainer.logged_metrics.items():
+                str_metrics += f'\n\t{key}: {val}'
+            logger.info(str_metrics)
+
+    def on_validation_end(self):
+        self._log_metrics()
 
     def configure_optimizers(self):
         optimizer = instantiate(self.cfg.optim, self.parameters())

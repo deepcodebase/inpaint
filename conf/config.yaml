@@ -25,12 +25,35 @@ dataset:
 
 val_save:
   n_image_per_batch: 8
-  n_save: 10
+  n_save: 11
+
+logging:
+  - _target_: pytorch_lightning.loggers.TensorBoardLogger
+    save_dir: .
+    name: log
+    version: tb
+  - _target_: pytorch_lightning.loggers.CSVLogger
+    save_dir: .
+    name: log
+    version: csv
+
+callbacks:
+  - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    dirpath: log/checkpoints
+    filename: '{epoch}-{step}-{val_loss:.2f}'
+    # auto_insert_metric_name: false
+    save_last: true
+    monitor: 'val_loss'
+    save_top_k: 2
+    verbose: true
 
 run_test: false
 seed: 2021
 find_unused_parameters: true
 
+# debug / run
+mode: run
+
 hydra:
   run:
-    dir: /outputs/${dataset.data.name}/${model._target_}/${now:%Y-%m-%d_%H-%M-%S}
+    dir: /outputs/${mode}/${dataset.data.name}/${model._target_}/${now:%Y-%m-%d_%H-%M-%S}
