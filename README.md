@@ -131,8 +131,8 @@ Reading the offical documents of Hydra and PyTorchLightning to know more about:
 
 Training on Places2 with 20 epochs.
 
-!{}(assets/images/000000084.jpg)
-!{}(assets/images/000000140.jpg)
+![](assets/images/000000084.jpg)
+![](assets/images/000000140.jpg)
 
 
 
