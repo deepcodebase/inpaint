@@ -19,7 +19,6 @@ Currently, only [DFNet](https://github.com/hughplay/DFNet) is supported. More me
 - Hydra
     - flexible configuration system
     - logging (stream to file, folder structure)
-    - multi-run
 - Others
     - save sample results
 
@@ -86,7 +85,7 @@ python core.py env --root
 
 Basiclly, there are four config files:
 
-- `/docker/Dockerfile.pytorch` defines basic environments including cuda, cudnn, nccl, conda, torch, etc. This image has been build at [`deepbase/pytorch`](https://hub.docker.com/r/deepbase/pytorch). By default, you don't need to change this.
+- `/docker/Dockerfile.pytorch` defines basic environments including cuda, cudnn, nccl, conda, torch, etc. This image has been build at [`deepbase/pytorch`](https://hub.docker.com/r/deepbase/pytorch). In general, you don't need to change this.
 - `/docker/Dockerfile.local` defines the logic of building the local image. For example, install packages defined in `requirements.txt`.
 - `/docker/requirements.txt` defines the python packages you want to install.
 - `/docker-compose.yml` defines the setting of running the container. For example, the volumes, timezone, etc.
@@ -102,14 +101,25 @@ python core.py env prepare --build
 
 ## Training
 
+### Data Prepartion
+
+1. Image data: any image data you like. e.g. Places2, ImageNet, etc.
+1. Masks: you can download and use [free-form-mask](download/free-form-mask.tar.gz).
+
+Modify the settings especially the data location under `conf/dataset`.
+
+Tips: your local dataset folder should be mounted to `/data` in docker, remember to change the volumes in `docker-compose.yml`.
+
+### Running
+
 Enter the environment and run:
 
 ```
 python train.py
 ```
 
-### Suggestions
+### Reading Suggestions
 
-Reading the offical documents of Hydra and PyTorchLightning to know more:
+Reading the offical documents of Hydra and PyTorchLightning to know more about:
 - [Hydra](https://hydra.cc/docs/intro): Very powerful and convenient configuration system and more.
 - [PyTorchLightning](https://pytorch-lightning.readthedocs.io/en/latest/starter/new-project.html): You almost only need to write codes for models and data. Say goodbye to codes for pipelines, mixed precision, logging, etc.
