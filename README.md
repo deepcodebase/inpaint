@@ -123,3 +123,13 @@ python train.py
 Reading the offical documents of Hydra and PyTorchLightning to know more about:
 - [Hydra](https://hydra.cc/docs/intro): Very powerful and convenient configuration system and more.
 - [PyTorchLightning](https://pytorch-lightning.readthedocs.io/en/latest/starter/new-project.html): You almost only need to write codes for models and data. Say goodbye to codes for pipelines, mixed precision, logging, etc.
+
+
+## Results
+
+### Results of DFNet
+
+Training on Places2 with 20 epochs.
+
+!{}(assets/images/000000084.jpg)
+!{}(assets/images/000000140.jpg)
