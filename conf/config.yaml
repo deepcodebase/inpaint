@@ -5,6 +5,8 @@ defaults:
   - scheduler: step
   - dataset: places2
   - pipeline: inpainter
+  - hydra/job_logging: colorlog
+  - hydra/hydra_logging: colorlog
 
 pl_trainer:
   accelerator: ddp
