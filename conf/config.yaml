@@ -1,8 +1,8 @@
 defaults:
   - model: dfnet
   - loss: inpaint
-  - optim: adam
-  - scheduler: step
+  - optim: adamw
+  - scheduler: cosine
   - dataset: places2
   - pipeline: inpainter
   - hydra/job_logging: colorlog
@@ -54,7 +54,7 @@ seed: 2021
 find_unused_parameters: true
 
 # debug / run
-mode: run
+mode: debug
 
 hydra:
   run:
