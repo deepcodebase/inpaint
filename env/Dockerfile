@@ -1,4 +1,4 @@
-FROM deepbase/pytorch:latest
+FROM deepbase/pytorch:1.8.1
 
 ARG USER_ID=1011
 ARG GROUP_ID=1011

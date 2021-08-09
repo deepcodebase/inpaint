@@ -1,4 +1,3 @@
-# @package _group_
 _target_: model.dfnet.DFNet
 c_img: 3
 c_mask: 1

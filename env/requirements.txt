@@ -1,0 +1,8 @@
+wandb
+rich
+ipython
+pytorch-lightning==1.2.5
+hydra-core==1.1.0
+hydra_colorlog
+omegaconf==2.1.0
+PyYAML==5.3.1

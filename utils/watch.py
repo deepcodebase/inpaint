@@ -1,6 +1,6 @@
 """
-This script will run <command> when and only when the condition is true.
-Usage: python watch.py <type>:<target> "<command>"  [--gap <seconds>] [--reverse]
+This script will run <cmd> when and only when the condition is true.
+Usage: python watch.py <type>:<target> "<cmd>"  [--gap <seconds>] [--reverse]
 For example:
 1. Waiting until the target file exists:
     # python watch.py f:test "ls -l" --gap 1
@@ -15,7 +15,7 @@ import time
 
 
 def watch(args):
-    print("Waiting to run: \n# {}".format(args.command))
+    print("Waiting to run: \n# {}".format(args.cmd))
     print("Checking {} every {} seconds...".format(args.target, args.gap))
 
     try:
@@ -37,16 +37,16 @@ def watch(args):
             raise NotImplementedError("Unknown type: {}.".format(_type))
 
         if result ^ args.reverse:
-            execute(args.command)
+            execute(args.cmd)
             break
 
         time.sleep(args.gap)
 
 
-def execute(command):
-    print(command)
+def execute(cmd):
+    print(cmd)
     print()
-    p = subprocess.Popen(command, shell=True)
+    p = subprocess.Popen(cmd, shell=True)
     try:
         p.wait()
     except KeyboardInterrupt:
@@ -57,12 +57,17 @@ def execute(command):
         p.wait()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+def add_watch_args(parser):
     parser.add_argument("target")
-    parser.add_argument("command")
+    parser.add_argument("cmd")
     parser.add_argument("--gap", default=300, type=int)
     parser.add_argument("--reverse", action="store_true")
+    return parser
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    add_watch_args(parser)
 
     args = parser.parse_args()
     watch(args)

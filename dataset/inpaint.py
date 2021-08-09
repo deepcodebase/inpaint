@@ -43,13 +43,14 @@ class InpaintDataset(Dataset):
 class InpaintDataModule(LightningDataModule):
 
     def __init__(
-            self, data: Dict[str, Any], mask: Dict[str, Any],
+            self, name:str, data: Dict[str, Any], mask: Dict[str, Any],
             height: int = 512, width: int = 512,
             batch_size: int = 32, num_workers: int = 6,
             pin_memory: bool = False):
 
         super().__init__()
 
+        self.name = name
         self.data = data
         self.mask = mask
 

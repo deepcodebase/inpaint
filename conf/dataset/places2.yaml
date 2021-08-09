@@ -1,7 +1,6 @@
-# @package _group_
 _target_: dataset.inpaint.InpaintDataModule
+name: places2
 data:
-  name: places2
   train_dir: /data/places2/data_large
   val_dir: /data/places2/val_large
   test_dir: /data/places2/test_large

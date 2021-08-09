@@ -1,0 +1,7 @@
+wandb:
+  _target_: pytorch_lightning.loggers.WandbLogger
+  save_dir: .
+  name: ${model._target_}_${now:%Y-%m-%d_%H-%M-%S}
+  version: ${model._target_}_${now:%Y-%m-%d_%H-%M-%S}
+  project: ${dataset.name}
+  tags: []

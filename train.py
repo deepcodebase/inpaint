@@ -1,11 +1,15 @@
 import hydra
 from hydra.utils import instantiate
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 import pytorch_lightning as pl
+
+from utils.log import print_config
 
 
 @hydra.main(config_path='conf', config_name='config')
 def main(cfg: DictConfig) -> None:
+
+    print_config(cfg)
 
     pl._logger.handlers = []
     pl._logger.propagate = True
@@ -13,17 +17,17 @@ def main(cfg: DictConfig) -> None:
     if cfg.seed is not None:
         pl.seed_everything(cfg.seed)
 
-    model = instantiate(cfg.pipeline, cfg=cfg)
+    model = instantiate(cfg.pipeline, cfg=cfg, _recursive_=False)
 
     cfg_trainer = dict(cfg.pl_trainer)
-    if cfg.logging:
+    if 'logging' in cfg:
         loggers = []
-        for cfg_log in cfg.logging:
+        for _, cfg_log in cfg.logging.items():
             loggers.append(instantiate(cfg_log))
         cfg_trainer['logger'] = loggers
     if cfg.callbacks:
         callbacks = []
-        for cfg_callback in cfg.callbacks:
+        for _, cfg_callback in cfg.callbacks.items():
             callbacks.append(instantiate(cfg_callback))
         cfg_trainer['callbacks'] =callbacks
 

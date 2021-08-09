@@ -1,12 +1,11 @@
 import argparse
 import os
-import re
 import signal
 import subprocess
-import sys
 from pathlib import Path
 
-from utils.watch import watch
+from utils.watch import watch, add_watch_args
+from utils.env import Env
 
 
 def execute(command):
@@ -23,8 +22,9 @@ def execute(command):
 
 def prepare_parser():
     parser = argparse.ArgumentParser(
-        description='The core script of experiment management.')
-    subparsers = parser.add_subparsers(dest='command')
+        description="The core script of experiment management."
+    )
+    subparsers = parser.add_subparsers(dest="command")
 
     add_env_parser(subparsers)
     add_watch_parser(subparsers)
@@ -34,61 +34,76 @@ def prepare_parser():
 
 def add_env_parser(subparsers):
     parser = subparsers.add_parser(
-        'env', description='Environment Management.')
-    parser.add_argument(
-        'action', nargs='?', choices=['prepare', 'enter', 'stop'],
-        default='enter')
-    parser.add_argument('-b', '--build', action='store_true', default=False)
-    parser.add_argument('--root', action='store_true', default=False)
+        "env", description="Environment Management.")
+    parser.add_argument("action", nargs="?", default="enter")
+    parser.add_argument("-b", "--build", action="store_true", default=False)
+    parser.add_argument("--root", action="store_true", default=False)
+    parser.add_argument("--code_root", type=str, default='.')
 
 
 def env(args):
-    execute('echo "UID=$(id -u)\nGID=$(id -g)\nUSER_NAME=$(whoami)" > ./.env')
-    if args.action == 'prepare':
-        command = 'docker-compose up -d'
+    e = _set_env()
+    _create_log_symlink(Path(e['LOG_ROOT']['val']))
+
+    if args.action == "prepare":
+        command = "docker-compose up -d"
         if args.build:
-            command += ' --build'
-    elif args.action == 'enter':
+            command += " --build"
+    elif args.action == "enter":
         if args.root:
-            command = 'docker-compose exec -u root playground zsh'
+            command = "docker-compose exec -u root lab zsh"
         else:
-            command = 'docker-compose exec playground zsh'
-    elif args.action == 'stop':
-        command = 'docker-compose stop'
+            command = "docker-compose exec lab zsh"
+    elif args.action == "stop":
+        command = "docker-compose stop"
     else:
-        raise NotImplementedError
+        command = f"docker-compose {args.action}"
     execute(command)
 
 
+def _set_env():
+    e = Env('.env')
+    if 'UID' not in e or 'GID' not in e or 'USER_NAME' not in e:
+        e['UID'] = os.getuid()
+        e['GID'] = os.getgid()
+        e['USER_NAME'] = os.getlogin()
+    e['CODE_ROOT'] = args.code_root
+    if 'PROJECT' not in e:
+        project = input('Give a project name: ').strip()
+        e['PROJECT'] = str(project)
+    if 'LOG_ROOT' not in e:
+        log_root = Path(input(
+            'Input the log dir (will be mounted to /outputs): '))
+        log_root.mkdir(exist_ok=True, parents=True)
+        e['LOG_ROOT'] = str(log_root)
+    if 'DATA_ROOT' not in e:
+        data_root = Path(input(
+            'Input the data dir (will be mounted to /data): '))
+        data_root.mkdir(exist_ok=True, parents=True)
+        e['DATA_ROOT'] = str(data_root)
+    e.save()
+    return e
+
+
+def _create_log_symlink(log_path):
+    link_path = Path('outputs')
+    if not link_path.exists() and not link_path.is_symlink():
+        link_path.symlink_to(
+            log_path.expanduser(), target_is_directory=True)
+
+
 def add_watch_parser(subparsers):
-    """
-    This script will run <command> when and only when the condition is true.
-    Usage:
-        # python core.py watch <type>:<target> "<command>"  [--gap <seconds>] [--reverse]
-    For example:
-    1. Waiting until the target file exists:
-        # python watch.py f:test "ls -l" --gap 1
-    2. Waiting until the process pid:1 quits:
-        # python watch.py p:1 "ls -l" --gap 1
-    """
-    parser = subparsers.add_parser('watch', description='Wather.')
-    parser.add_argument("target")
-    parser.add_argument("command")
-    parser.add_argument("--gap", default=300, type=int)
-    parser.add_argument("--reverse", action="store_true")
+    parser = subparsers.add_parser("watch", description="Wather.")
+    add_watch_args(parser)
 
 
 if __name__ == "__main__":
     parser = prepare_parser()
     args = parser.parse_args()
 
-    if args.command == 'train':
-        train(args)
-    elif args.command == 'test':
-        test(args)
-    elif args.command == 'env':
+    if args.command == "env":
         env(args)
-    elif args.command == 'watch':
+    elif args.command == "watch":
         watch(args)
     else:
         pass

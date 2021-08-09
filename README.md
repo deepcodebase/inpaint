@@ -4,10 +4,13 @@ This repo implements a simple PyTorch codebase for training inpainting models wi
 
 Currently, only [DFNet](https://github.com/hughplay/DFNet) is supported. More methods as well as some additional useful utilities for image inpainting will be implemented.
 
-## Requirements
+## Prerequirements
 
-- nvidia-docker
-- docker-compose
+We use docker to run all experiemnts. 
+
+- [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+- [docker-compose](https://docs.docker.com/compose/install/)
+
 
 ## Features
 
@@ -26,21 +29,39 @@ Currently, only [DFNet](https://github.com/hughplay/DFNet) is supported. More me
 
 ### Build the environment
 
-We use docker to run all experiemnts. Before running any codes, you should check `docker-compose.yml` first. The defualt setting is shown as below:
+Just run to build the image for the first time:
+
+```
+python core.py env prepare
+```
+
+
+Explaination:
+
+- When you first run this command, you will be asked to give three items:
+    1. a project name,
+    1. the root folder of your train log,
+    1. the root folder of your datasets,
+- then an image is built based on `/env/Dockerfile`,
+- and at last, a container is launched based on `docker-compose.yml`
+
+
+The defualt setting of `docker-compose.yml` is shown as below:
 
 ``` yaml
 version: "3.9"
 services:
-    playground:
-        container_name: playground
+    lab:
+        container_name: ${PROJECT}
+        runtime: nvidia
         build:
-            context: docker/
-            dockerfile: Dockerfile.local
+            context: env/
+            dockerfile: Dockerfile
             args:
                 - USER_ID=${UID}
                 - GROUP_ID=${GID}
                 - USER_NAME=${USER_NAME}
-        image: pytorch_local
+        image: pytorch181_local
         environment:
             - TZ=Asia/Shanghai
             - TORCH_HOME=/data/torch_model
@@ -49,23 +70,11 @@ services:
         working_dir: /code
         command: ['sleep', 'infinity']
         volumes:
-            - .:/code
-            - /data1/data:/data
-            - /data2/data/train_log/outputs:/outputs
-```
-
-You should change the `volumes` to:
-- mount your dataset folders to `/data`,
-- and mount a folder for `/outputs` (training logs will be written to this folder)
-
-Next, simply run:
+            - ${CODE_ROOT}:/code
+            - ${DATA_ROOT}:/data
+            - ${LOG_ROOT}:/outputs
 
 ```
-python core.py env prepare
-```
-
-This command will first build an image based on `/docker/Dockerfile.local` and then luanch a container based on this image.
-
 
 ### Enter the environment
 
@@ -81,22 +90,22 @@ The default user is the same as the host to avoid permission issues. And of cour
 python core.py env --root
 ```
 
-### Change the environment
+### Modify the environment at anytime
 
-Basiclly, there are four config files:
+Basiclly, the environment are determined by four items:
 
-- `/docker/Dockerfile.pytorch` defines basic environments including cuda, cudnn, nccl, conda, torch, etc. This image has been build at [`deepbase/pytorch`](https://hub.docker.com/r/deepbase/pytorch). In general, you don't need to change this.
-- `/docker/Dockerfile.local` defines the logic of building the local image. For example, install packages defined in `requirements.txt`.
-- `/docker/requirements.txt` defines the python packages you want to install.
-- `/docker-compose.yml` defines the setting of running the container. For example, the volumes, timezone, etc.
+1. `/env/Dockerfile` defines the logic of building the local docker image. For example, installing packages defined in `requirements.txt` based on `deepbase/pytorch:latest`.
+1. Base docker image. From `/env/Dockerfile`, you can find [`deepbase/pytorch`](https://hub.docker.com/r/deepbase/pytorch) is the base image. The original Dockerfile of the base image is at [deepcodebase/docker](https://github.com/deepcodebase/docker). You can change the base image as whatever you like.
+1. `/env/requirements.txt` defines the python packages you want to install in the local docker image.
+1. `/docker-compose.yml` defines the setting of running the container. For example, the volumes, timezone, etc.
 
 
-After changing the settings as you want, you can rebuild the local image by running:
-
+After changing the settings as you want at anytime, you can rebuild the local image by running:
 
 ```
 python core.py env prepare --build
 ```
+
 
 
 ## Training
@@ -112,17 +121,18 @@ Tips: your local dataset folder should be mounted to `/data` in docker, remember
 
 ### Running
 
-Enter the environment and run:
+After entering the environment, you can launch training. Example training commands:
 
 ```
 python train.py
+python train.py mode=run pl_trainer.gpus=\'3,4\' logging.wandb.notes="tune model"
 ```
 
 ### Reading Suggestions
 
 Reading the offical documents of Hydra and PyTorchLightning to know more about:
 - [Hydra](https://hydra.cc/docs/intro): Very powerful and convenient configuration system and more.
-- [PyTorchLightning](https://pytorch-lightning.readthedocs.io/en/latest/starter/new-project.html): You almost only need to write codes for models and data. Say goodbye to codes for pipelines, mixed precision, logging, etc.
+- [PyTorchLightning](https://pytorch-lightning.readthedocs.io/en/latest/starter/new-project.html): You almost only need to write codes for models and data. Say goodbye to massive codes for pipelines, mixed precision, logging, etc.
 
 
 ## Results
