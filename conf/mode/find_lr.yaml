@@ -1,0 +1,9 @@
+# @package _global_
+mode: find_lr
+
+defaults:
+  - override /logging: default
+
+logging:
+  wandb:
+    tags: ['find_lr']

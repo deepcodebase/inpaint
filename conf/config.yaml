@@ -3,30 +3,14 @@ defaults:
   - loss: inpaint
   - optim: adamw
   - scheduler: cosine
-  - dataset: places2
+  - dataset: [default, places2]
   - pipeline: inpainter
   - callbacks: [checkpoint, lr_monitor]
   - logging: null
   - mode: debug
+  - pl_trainer: default
   - override hydra/job_logging: colorlog
   - override hydra/hydra_logging: colorlog
-
-pl_trainer:
-  accelerator: ddp
-  precision: 16
-  amp_backend: native
-  amp_level: O2
-  profiler: simple
-  weights_summary: top
-  deterministic: true
-  max_epochs: 20
-  gpus: -1
-  default_root_dir: ./
-
-dataset:
-  batch_size: 32
-  num_workers: 4
-  pin_memory: True
 
 val_save:
   n_image_per_batch: 8
@@ -34,7 +18,6 @@ val_save:
 
 run_test: false
 seed: 2021
-find_unused_parameters: true
 
 hydra:
   run:

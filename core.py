@@ -74,12 +74,12 @@ def _set_env():
     if 'LOG_ROOT' not in e:
         log_root = Path(input(
             'Input the log dir (will be mounted to /outputs): '))
-        log_root.mkdir(exist_ok=True, parents=True)
+        log_root.expanduser().mkdir(exist_ok=True, parents=True)
         e['LOG_ROOT'] = str(log_root)
     if 'DATA_ROOT' not in e:
         data_root = Path(input(
             'Input the data dir (will be mounted to /data): '))
-        data_root.mkdir(exist_ok=True, parents=True)
+        data_root.expanduser().mkdir(exist_ok=True, parents=True)
         e['DATA_ROOT'] = str(data_root)
     e.save()
     return e

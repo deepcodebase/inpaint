@@ -1,0 +1,10 @@
+accelerator: ddp
+precision: 16
+amp_backend: native
+amp_level: O2
+profiler: simple
+weights_summary: top
+deterministic: true
+max_epochs: 20
+gpus: -1
+default_root_dir: ./

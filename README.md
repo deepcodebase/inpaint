@@ -29,7 +29,7 @@ We use docker to run all experiemnts.
 
 ### Build the environment
 
-Just run to build the image for the first time:
+Build the image for the first time:
 
 ```
 python core.py env prepare
@@ -46,7 +46,7 @@ Explaination:
 - and at last, a container is launched based on `docker-compose.yml`
 
 
-The defualt setting of `docker-compose.yml` is shown as below:
+The defualt setting of `docker-compose.yml` is shown as below, you can modify this setting before building accordingly:
 
 ``` yaml
 version: "3.9"
@@ -76,7 +76,7 @@ services:
 
 ```
 
-### Enter the environment
+### Get into the environment
 
 Simply run:
 
@@ -112,12 +112,11 @@ python core.py env prepare --build
 
 ### Data Prepartion
 
-1. Image data: any image data you like. e.g. Places2, ImageNet, etc.
-1. Masks: you can download and use [free-form-mask](download/free-form-mask.tar.gz).
+1. Image data: any image data you like. e.g. Places2, ImageNet, etc. Place your dataset into your `DATAROOT` in your local machine (mapped to docker's `/data`). For example: `DATAROOT/places2` is used for training by default.
+1. Masks: you can download and use [free-form-mask](download/free-form-mask.tar.gz). Decompress the file and place `mask` under `DATAROOT`.
+1. By default, inside the environment, you need to have `places2` and `mask` under `/data`.
+1. If you use other datasets, remember to modify the settings especially the data location under `conf/dataset`.
 
-Modify the settings especially the data location under `conf/dataset`.
-
-Tips: your local dataset folder should be mounted to `/data` in docker, remember to change the volumes in `docker-compose.yml`.
 
 ### Running
 
@@ -126,6 +125,24 @@ After entering the environment, you can launch training. Example training comman
 ```
 python train.py
 python train.py mode=run pl_trainer.gpus=\'3,4\' logging.wandb.notes="tune model"
+python train.py +experiment=k80 mode=run logging.wandb.tags='[k80]'
+```
+
+This project use wandb for logging by default, it will prompt if you run training the first time:
+
+```
+wandb: (1) Create a W&B account
+wandb: (2) Use an existing W&B account
+wandb: (3) Don't visualize my results
+wandb: Enter your choice:
+```
+
+just follow the steps and wandb is convenient and easy use. If you wan't to use tensorboard instead, just add the flag when running:
+
+
+```
+
+python train.py logging=tensorboard
 ```
 
 ### Reading Suggestions

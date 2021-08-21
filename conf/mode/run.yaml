@@ -2,4 +2,4 @@
 mode: run
 
 defaults:
-  - override /logging: all
+  - override /logging: default
